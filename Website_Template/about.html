@@ -53,15 +53,34 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            backdrop-filter: blur(10px);
-            background: rgba(10, 10, 10, 0.3);
+            background: none !important;
+            background-color: transparent !important;
+            background-image: none !important;
+            backdrop-filter: none !important;
+            box-shadow: none !important;
+            border: none !important;
         }
 
         .nav-brand {
-            font-size: 1.5rem;
-            font-weight: 700;
+            font-size: 2rem;
+            font-weight: 800;
             color: #ffffff;
             text-decoration: none;
+            text-shadow: 
+                0 0 10px rgba(139, 92, 246, 0.8),
+                0 0 20px rgba(139, 92, 246, 0.6),
+                0 0 30px rgba(139, 92, 246, 0.4),
+                0 0 40px rgba(139, 92, 246, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .nav-brand:hover {
+            text-shadow: 
+                0 0 15px rgba(139, 92, 246, 1),
+                0 0 25px rgba(139, 92, 246, 0.8),
+                0 0 35px rgba(139, 92, 246, 0.6),
+                0 0 45px rgba(139, 92, 246, 0.4);
+            transform: scale(1.05);
         }
 
         .nav-links {
@@ -128,33 +147,65 @@
             margin-bottom: 3rem;
         }
 
-        /* Image placeholder */
+        /* Profile image with tilt and spotlight */
         .image-container {
             display: flex;
             justify-content: center;
             align-items: center;
+            perspective: 1000px;
         }
 
-        .image-placeholder {
-            width: 100%;
+        .image-wrapper {
+            position: relative;
             max-width: 400px;
-            aspect-ratio: 1;
-            background: rgba(255, 255, 255, 0.1);
-            border: 2px solid rgba(139, 92, 246, 0.3);
+            width: 100%;
+            transform-style: preserve-3d;
+            transition: transform 0.2s ease-out;
+            overflow: hidden;
             border-radius: 20px;
-            backdrop-filter: blur(10px);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #9ca3af;
-            font-size: 1.1rem;
-            transition: all 0.3s ease;
-            flex-direction: column;
         }
 
-        .image-placeholder:hover {
+        .profile-image {
+            width: 100%;
+            aspect-ratio: 1;
+            border: 3px solid rgba(139, 92, 246, 0.4);
+            border-radius: 20px;
+            object-fit: cover;
+            transition: all 0.3s ease;
+            box-shadow: 
+                0 10px 30px rgba(139, 92, 246, 0.3),
+                0 0 20px rgba(139, 92, 246, 0.2);
+            position: relative;
+            z-index: 1;
+        }
+
+        .profile-image:hover {
             border-color: #8b5cf6;
-            background: rgba(139, 92, 246, 0.1);
+            box-shadow: 
+                0 15px 40px rgba(139, 92, 246, 0.4),
+                0 0 30px rgba(139, 92, 246, 0.3);
+        }
+
+        /* Spotlight effect */
+        .spotlight {
+            position: absolute;
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            background: radial-gradient(circle at center, 
+                rgba(255, 255, 255, 0.3) 0%, 
+                rgba(255, 255, 255, 0.1) 40%, 
+                transparent 80%);
+            filter: blur(20px);
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.2s ease;
+            z-index: 2;
+            transform: translate(-50%, -50%);
+        }
+
+        .image-wrapper:hover .spotlight {
+            opacity: 1;
         }
 
         /* Back to home button */
@@ -243,7 +294,7 @@
     
     <!-- Navigation -->
     <nav class="nav">
-        <a href="index.html" class="nav-brand">Sean Winslow</a>
+        <a href="index.html" class="nav-brand">SW</a>
         <div class="nav-links">
             <a href="index.html" class="nav-link">Home</a>
             <a href="about.html" class="nav-link" style="color: #8b5cf6;">About</a>
@@ -263,10 +314,9 @@
             </div>
             
             <div class="image-container">
-                <div class="image-placeholder">
-                    Professional Photo
-                    <br>
-                    <small style="color: #6b7280; font-size: 0.9rem;">400x400px</small>
+                <div class="image-wrapper" id="imageWrapper">
+                    <div class="spotlight" id="spotlight"></div>
+                    <img src="Images/Sean_Winslow_Placeholder.png" alt="Sean Winslow - AI Product Manager" class="profile-image">
                 </div>
             </div>
         </div>
@@ -309,9 +359,68 @@
             });
         });
 
+        // Tilt and spotlight effect for profile image
+        function initImageEffects() {
+            const imageWrapper = document.getElementById('imageWrapper');
+            const spotlight = document.getElementById('spotlight');
+            
+            if (!imageWrapper || !spotlight) return;
+            
+            const rotationFactor = 15;
+            let currentX = 0;
+            let currentY = 0;
+            let targetX = 0;
+            let targetY = 0;
+            
+            // Smooth animation loop
+            function animate() {
+                // Smooth interpolation
+                currentX += (targetX - currentX) * 0.1;
+                currentY += (targetY - currentY) * 0.1;
+                
+                // Apply transforms
+                const rotateX = currentY * rotationFactor;
+                const rotateY = currentX * -rotationFactor;
+                
+                imageWrapper.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+                
+                requestAnimationFrame(animate);
+            }
+            
+            // Mouse move handler
+            imageWrapper.addEventListener('mousemove', (e) => {
+                const rect = imageWrapper.getBoundingClientRect();
+                const width = rect.width;
+                const height = rect.height;
+                const mouseX = e.clientX - rect.left;
+                const mouseY = e.clientY - rect.top;
+                
+                // Calculate position (-0.5 to 0.5)
+                const xPos = (mouseX / width) - 0.5;
+                const yPos = (mouseY / height) - 0.5;
+                
+                targetX = xPos;
+                targetY = yPos;
+                
+                // Update spotlight position
+                spotlight.style.left = mouseX + 'px';
+                spotlight.style.top = mouseY + 'px';
+            });
+            
+            // Mouse leave handler
+            imageWrapper.addEventListener('mouseleave', () => {
+                targetX = 0;
+                targetY = 0;
+            });
+            
+            // Start animation loop
+            animate();
+        }
+
         // Initialize animations
         document.addEventListener('DOMContentLoaded', () => {
             createStars();
+            initImageEffects();
             
             // Add fade-in animation to elements
             const elements = document.querySelectorAll('.fade-in');

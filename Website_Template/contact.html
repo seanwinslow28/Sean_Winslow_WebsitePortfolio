@@ -53,15 +53,31 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            backdrop-filter: blur(10px);
-            background: rgba(10, 10, 10, 0.3);
+            backdrop-filter: blur(15px);
+            background: transparent !important;
+            background-color: transparent !important;
         }
 
         .nav-brand {
-            font-size: 1.5rem;
-            font-weight: 700;
+            font-size: 2rem;
+            font-weight: 800;
             color: #ffffff;
             text-decoration: none;
+            text-shadow: 
+                0 0 10px rgba(139, 92, 246, 0.8),
+                0 0 20px rgba(139, 92, 246, 0.6),
+                0 0 30px rgba(139, 92, 246, 0.4),
+                0 0 40px rgba(139, 92, 246, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .nav-brand:hover {
+            text-shadow: 
+                0 0 15px rgba(139, 92, 246, 1),
+                0 0 25px rgba(139, 92, 246, 0.8),
+                0 0 35px rgba(139, 92, 246, 0.6),
+                0 0 45px rgba(139, 92, 246, 0.4);
+            transform: scale(1.05);
         }
 
         .nav-links {
@@ -320,7 +336,7 @@
     
     <!-- Navigation -->
     <nav class="nav">
-        <a href="index.html" class="nav-brand">Sean Winslow</a>
+        <a href="index.html" class="nav-brand">SW</a>
         <div class="nav-links">
             <a href="index.html" class="nav-link">Home</a>
             <a href="about.html" class="nav-link">About</a>
